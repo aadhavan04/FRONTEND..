@@ -11,68 +11,65 @@ function Workout() {
     userId: currentUser.email,
     type: "",
     duration: "",
+    distance: "",
     calories: ""
   });
 
   const [workouts, setWorkouts] = useState([]);
   const [goal, setGoal] = useState(500);
+  const [error, setError] = useState("");
 
-  // 🔹 LOAD DATA
   useEffect(() => {
-    const resetFlag = localStorage.getItem("workoutReset");
-
-    if (resetFlag === "true") {
-      setWorkouts([]);
-    } else {
-      fetchWorkouts();
-    }
+    fetchWorkouts();
   }, []);
 
-  // 🔹 FETCH FROM BACKEND
   const fetchWorkouts = async () => {
-    const res = await axios.get(
-      `https://backend-wh-nudx.onrender.com/api/workout/${currentUser.email}`
-    );
-    setWorkouts(res.data);
+    try {
+      const res = await axios.get(
+        `https://backend-wh-nudx.onrender.com/api/workout/${currentUser.email}`
+      );
+
+      setWorkouts(res.data);
+
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  // 🔹 ADD WORKOUT
   const handleAdd = async () => {
-    await axios.post(
-      "https://backend-wh-nudx.onrender.com/api/workout/add",
-      data
-    );
 
-    const resetFlag = localStorage.getItem("workoutReset");
-
-    if (resetFlag === "true") {
-      // build fresh list manually
-      setWorkouts((prev) => [...prev, data]);
-    } else {
-      fetchWorkouts();
+    if (
+      !data.type ||
+      !data.duration ||
+      !data.distance ||
+      !data.calories
+    ) {
+      setError("Please fill all fields");
+      return;
     }
 
-    setData({
-      userId: currentUser.email,
-      type: "",
-      duration: "",
-      calories: ""
-    });
-  };
+    try {
 
-  // 🔥 RESET
-  const handleReset = () => {
-    localStorage.setItem("workoutReset", "true");
+      await axios.post(
+        "https://backend-wh-nudx.onrender.com/api/workout/add",
+        data
+      );
 
-    setWorkouts([]);
-    setGoal(500);
+      fetchWorkouts();
 
-    setData({
-      userId: currentUser.email,
-      type: "",
-      duration: "",
-      calories: ""
-    });
+      setError("");
+
+      setData({
+        userId: currentUser.email,
+        type: "",
+        duration: "",
+        distance: "",
+        calories: ""
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const totalCalories = workouts.reduce(
@@ -85,100 +82,173 @@ function Workout() {
       ? Math.min((totalCalories / goal) * 100, 100)
       : 0;
 
-  const isGoalReached = progress === 100;
-
   return (
-    <div style={{ maxWidth: "500px", margin: "auto", padding: "20px" }}>
+    <div style={{ maxWidth: "600px", margin: "auto", padding: "20px" }}>
 
-      <button onClick={() => navigate("/home")}>⬅ Home</button>
+      <button
+  onClick={() => navigate("/home")}
+  style={{
+    position: "fixed",
+    top: "20px",
+    left: "20px",
+    padding: "10px 15px",
+    borderRadius: "10px"
+  }}
+>
+  ⬅ Home
+</button>
 
-      <h2>Your Workout</h2>
+      <h1>Fitness Tracker</h1>
 
-      <input
-        placeholder="Type"
+      <h2>Add Exercise</h2>
+
+      {/* Exercise Type */}
+      <select
         value={data.type}
-        onChange={(e) => setData({ ...data, type: e.target.value })}
-        style={{ width: "100%", margin: "5px 0", padding: "8px" }}
+        onChange={(e) =>
+          setData({ ...data, type: e.target.value })
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0"
+        }}
+      >
+        <option value="">Select Exercise</option>
+        <option value="Running">Running</option>
+        <option value="Cycling">Cycling</option>
+        <option value="Walking">Walking</option>
+        <option value="Strength Training">
+          Strength Training
+        </option>
+        <option value="Yoga">Yoga</option>
+        <option value="Swimming">Swimming</option>
+      </select>
+
+      {/* Duration */}
+      <input
+        type="number"
+        placeholder="Duration (minutes)"
+        value={data.duration}
+        onChange={(e) =>
+          setData({ ...data, duration: e.target.value })
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0"
+        }}
       />
 
-      {/* DURATION */}
-      <div style={{ position: "relative" }}>
-        <input
-          placeholder="Duration"
-          value={data.duration}
-          onChange={(e) => setData({ ...data, duration: e.target.value })}
-          style={{ width: "100%", margin: "5px 0", padding: "8px", paddingRight: "70px" }}
-        />
-        <span style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)" }}>
-          minutes
-        </span>
-      </div>
+      {/* Distance */}
+      <input
+        type="number"
+        placeholder="Distance (km)"
+        value={data.distance}
+        onChange={(e) =>
+          setData({ ...data, distance: e.target.value })
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0"
+        }}
+      />
 
-      {/* CALORIES */}
-      <div style={{ position: "relative" }}>
-        <input
-          placeholder="Calories"
-          value={data.calories}
-          onChange={(e) => setData({ ...data, calories: e.target.value })}
-          style={{ width: "100%", margin: "5px 0", padding: "8px", paddingRight: "50px" }}
-        />
-        <span style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)" }}>
-          cal
-        </span>
-      </div>
+      {/* Calories */}
+      <input
+        type="number"
+        placeholder="Calories Burned"
+        value={data.calories}
+        onChange={(e) =>
+          setData({ ...data, calories: e.target.value })
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0"
+        }}
+      />
 
-      <button onClick={handleAdd} style={{ marginTop: "10px" }}>
+      {error && (
+        <p style={{ color: "red" }}>{error}</p>
+      )}
+
+      <button
+        onClick={handleAdd}
+        style={{ marginTop: "10px" }}
+      >
         Add Workout
       </button>
 
-      <h2>Workout List</h2>
+      <h2 style={{ marginTop: "30px" }}>
+        Workout History
+      </h2>
 
       {workouts.map((w, i) => (
-        <div key={i} style={{
-          border: "1px solid #ccc",
-          padding: "15px",
-          margin: "10px 0",
-          borderRadius: "10px"
-        }}>
-          <p><b>Type:</b> {w.type}</p>
-          <p><b>Duration:</b> {w.duration} minutes</p>
-          <p><b>Calories:</b> {w.calories} cal</p>
+        <div
+          key={i}
+          style={{
+            border: "1px solid #ccc",
+            padding: "15px",
+            margin: "10px 0",
+            borderRadius: "10px",
+            background: "white"
+          }}
+        >
+          <p><b>Exercise:</b> {w.type}</p>
+
+          <p>
+            <b>Duration:</b> {w.duration} mins
+          </p>
+
+          <p>
+            <b>Distance:</b> {w.distance} km
+          </p>
+
+          <p>
+            <b>Calories:</b> {w.calories} cal
+          </p>
         </div>
       ))}
 
-      <h2>Progress</h2>
+      <h2>Calories Progress</h2>
 
       <input
-        placeholder="Set Goal Calories"
+        type="number"
+        placeholder="Goal Calories"
         value={goal}
-        onChange={(e) => setGoal(Number(e.target.value))}
-        style={{ width: "100%", padding: "8px" }}
+        onChange={(e) =>
+          setGoal(Number(e.target.value))
+        }
+        style={{
+          width: "100%",
+          padding: "10px"
+        }}
       />
 
-      <p>Total Calories: {totalCalories}</p>
-      <p>Goal: {goal}</p>
+      <p>Total Calories Burned: {totalCalories}</p>
 
-      <div style={{ width: "100%", background: "#ddd", height: "20px" }}>
-        <div style={{
-          width: `${progress}%`,
-          background: "green",
-          height: "100%"
-        }}></div>
+      <div
+        style={{
+          width: "100%",
+          background: "#ddd",
+          height: "20px",
+          borderRadius: "10px"
+        }}
+      >
+        <div
+          style={{
+            width: `${progress}%`,
+            background: "green",
+            height: "100%",
+            borderRadius: "10px"
+          }}
+        ></div>
       </div>
 
       <p>{progress.toFixed(0)}%</p>
 
-      {isGoalReached && (
-        <div style={{ marginTop: "15px", textAlign: "center" }}>
-          <p style={{ color: "green", fontWeight: "bold" }}>
-            Congratulations! You have achieved your total calories!
-          </p>
-
-          <button onClick={handleReset}>
-            Reset
-          </button>
-        </div>
-      )}
     </div>
   );
 }

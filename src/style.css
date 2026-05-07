@@ -263,3 +263,17 @@ button:hover {
 .logout-btn:hover {
   background: #ddd;
 }
+
+.app-title {
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-top: "150px"
+}
+
+.Login{
+  color: white;
+}
+
+.register{
+  color: white;
+}

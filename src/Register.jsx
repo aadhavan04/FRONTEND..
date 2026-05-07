@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import bgImage from "./assets/H&W.jpg";
 
 function Register() {
   const navigate = useNavigate();
@@ -32,10 +33,30 @@ function Register() {
   };
 
   return (
-    <div className="container">
+    <div
+  className="container"
+  style={{
+     backgroundImage: `url(${bgImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        textDecoration: "none",
+        fontWeight: "bold",
+        margin:"0%", 
+        padding: "0",
+        boxSizing: "border box",
+minHeight: "100vh",
+width: "100%",
+
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center"
+  }}
+>
 
       <h1 className="app-title">HEALTH & WELLNESS</h1>
-      <h2>REGISTER</h2>
+      <h2 className="register">REGISTER</h2>
 
       <div className="form">
 
@@ -74,9 +95,18 @@ function Register() {
      
       {error && <p className="error-text">{error}</p>}
 
-      <p style={{ marginTop: "15px" }}>
+      <p style={{ marginTop: "15px" , color: "white"}}>
         Already have an account?{" "}
-        <Link to="/login">Login</Link>
+        <Link
+  to="/login"
+  style={{
+    color: "lightblue",
+    textDecoration: "none",
+    fontWeight: "bold"
+  }}
+>
+  Login
+</Link>
       </p>
 
     </div>

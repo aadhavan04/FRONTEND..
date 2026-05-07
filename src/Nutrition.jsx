@@ -1,169 +1,343 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Nutrition() {
+
   const navigate = useNavigate();
 
   const [goalType, setGoalType] = useState("");
-  const [weight, setWeight] = useState("");
-  const [goalCalories, setGoalCalories] = useState(0);
 
-  const [intake, setIntake] = useState("");
-  const [error, setError] = useState("");
+  const [goalCalories, setGoalCalories] = useState(2000);
 
-  // ✅ LOAD FROM LOCAL STORAGE
-  const [history, setHistory] = useState(() => {
-    const saved = localStorage.getItem("nutritionHistory");
-    return saved
-      ? JSON.parse(saved)
-      : {
-          "weight loss": [],
-          "muscle gain": [],
-          "maintenance": []
-        };
+  // FOOD INPUT
+  const [food, setFood] = useState({
+    name: "",
+    calories: "",
+    protein: "",
+    carbs: "",
+    fat: ""
   });
 
-  // ✅ SAVE TO LOCAL STORAGE
-  useEffect(() => {
-    localStorage.setItem("nutritionHistory", JSON.stringify(history));
-  }, [history]);
+  // SEPARATE RECORDS FOR EACH GOAL
+  const [foods, setFoods] = useState({
+    "Weight Loss": [],
+    "Muscle Gain": [],
+    "Maintenance": []
+  });
 
-  // ✅ CALCULATE CALORIES
-  useEffect(() => {
-    const w = Number(weight);
+  const [error, setError] = useState("");
 
-    if (!w || !goalType) {
-      setGoalCalories(0);
-      return;
-    }
+  // ADD FOOD
+  const handleAddFood = () => {
 
-    if (goalType === "muscle gain") setGoalCalories(w * 32);
-    else if (goalType === "weight loss") setGoalCalories(w * 25);
-    else setGoalCalories(w * 28);
-
-  }, [weight, goalType]);
-
-  // ✅ ADD INTAKE
-  const handleAdd = () => {
     if (!goalType) {
-      setError("Please select your goal");
+      setError("Please select a goal");
       return;
     }
 
-    if (!intake) return;
+    if (
+      !food.name ||
+      !food.calories ||
+      !food.protein ||
+      !food.carbs ||
+      !food.fat
+    ) {
+      setError("Please fill all fields");
+      return;
+    }
 
-    const val = Number(intake);
-
-    setHistory((prev) => ({
+    setFoods((prev) => ({
       ...prev,
-      [goalType]: [...(prev[goalType] || []), val]
+      [goalType]: [...prev[goalType], food]
     }));
 
-    setIntake("");
+    setFood({
+      name: "",
+      calories: "",
+      protein: "",
+      carbs: "",
+      fat: ""
+    });
+
     setError("");
   };
 
-  // ✅ RESET
-  const handleReset = () => {
-    const empty = {
-      "weight loss": [],
-      "muscle gain": [],
-      "maintenance": []
-    };
+  // CURRENT GOAL RECORDS
+  const currentFoods = foods[goalType] || [];
 
-    setHistory(empty);
-    localStorage.removeItem("nutritionHistory");
-  };
-
-  const currentHistory = history[goalType] || [];
-
-  const total = currentHistory.reduce(
-    (sum, v) => sum + Number(v || 0),
+  // TOTALS
+  const totalCalories = currentFoods.reduce(
+    (sum, f) => sum + Number(f.calories),
     0
   );
 
+  const totalProtein = currentFoods.reduce(
+    (sum, f) => sum + Number(f.protein),
+    0
+  );
+
+  const totalCarbs = currentFoods.reduce(
+    (sum, f) => sum + Number(f.carbs),
+    0
+  );
+
+  const totalFat = currentFoods.reduce(
+    (sum, f) => sum + Number(f.fat),
+    0
+  );
+
+  // PROGRESS
   const progress =
     goalCalories > 0
-      ? Math.min((total / goalCalories) * 100, 100)
+      ? Math.min((totalCalories / goalCalories) * 100, 100)
       : 0;
 
-  const isGoalReached = progress === 100;
-
   return (
-    <div className="container">
+    <div
+      style={{
+        maxWidth: "700px",
+        margin: "auto",
+        padding: "20px"
+      }}
+    >
 
-      <button className="back-btn" onClick={() => navigate("/home")}>
+      {/* HOME BUTTON */}
+      <button
+        onClick={() => navigate("/home")}
+        style={{
+          position: "fixed",
+          top: "20px",
+          left: "20px",
+          padding: "10px 15px",
+          borderRadius: "10px"
+        }}
+      >
         ⬅ Home
       </button>
 
       <h1>Nutrition Planner</h1>
 
       {/* GOAL BUTTONS */}
-      <div style={{ display: "flex", gap: "15px", margin: "10px 0" }}>
-        <button onClick={() => setGoalType("weight loss")}>
+      <h2>Select Goal</h2>
+
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginBottom: "20px",
+          flexWrap: "wrap"
+        }}
+      >
+        <button onClick={() => setGoalType("Weight Loss")}>
           Weight Loss
         </button>
 
-        <button onClick={() => setGoalType("muscle gain")}>
+        <button onClick={() => setGoalType("Muscle Gain")}>
           Muscle Gain
         </button>
 
-        <button onClick={() => setGoalType("maintenance")}>
+        <button onClick={() => setGoalType("Maintenance")}>
           Maintenance
         </button>
       </div>
 
-      <h3>Enter Weight (kg)</h3>
+      <p>
+        <b>Current Goal:</b> {goalType || "Not Selected"}
+      </p>
 
+      {/* GOAL CALORIES */}
       <input
-        placeholder="Weight"
-        value={weight}
-        onChange={(e) => setWeight(e.target.value)}
+        type="number"
+        placeholder="Set Daily Calories Goal"
+        value={goalCalories}
+        onChange={(e) =>
+          setGoalCalories(Number(e.target.value))
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0"
+        }}
       />
 
-      <p>Goal: {goalType}</p>
-      <p>Calories Target: {goalCalories}</p>
-
-      <h2>Your Intake</h2>
+      {/* FOOD FORM */}
+      <h2>Add Food</h2>
 
       <input
+        placeholder="Food Name"
+        value={food.name}
+        onChange={(e) =>
+          setFood({ ...food, name: e.target.value })
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0"
+        }}
+      />
+
+      <input
+        type="number"
         placeholder="Calories"
-        value={intake}
-        onChange={(e) => setIntake(e.target.value)}
+        value={food.calories}
+        onChange={(e) =>
+          setFood({ ...food, calories: e.target.value })
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0"
+        }}
       />
 
-      <button onClick={handleAdd}>Add</button>
+      <input
+        type="number"
+        placeholder="Protein (g)"
+        value={food.protein}
+        onChange={(e) =>
+          setFood({ ...food, protein: e.target.value })
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0"
+        }}
+      />
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      <input
+        type="number"
+        placeholder="Carbs (g)"
+        value={food.carbs}
+        onChange={(e) =>
+          setFood({ ...food, carbs: e.target.value })
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0"
+        }}
+      />
 
-      <h2>Progress</h2>
+      <input
+        type="number"
+        placeholder="Fat (g)"
+        value={food.fat}
+        onChange={(e) =>
+          setFood({ ...food, fat: e.target.value })
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0"
+        }}
+      />
 
-      <p>Total Intake: {total}</p>
+      {error && (
+        <p style={{ color: "red" }}>
+          {error}
+        </p>
+      )}
 
-      <div style={{ width: "100%", background: "#ddd", height: "20px" }}>
+      <button onClick={handleAddFood}>
+        Add Food
+      </button>
+
+      {/* FOOD HISTORY */}
+      <h2 style={{ marginTop: "30px" }}>
+        {goalType} Food Records
+      </h2>
+
+      {currentFoods.length === 0 ? (
+        <p>No food records found</p>
+      ) : (
+        currentFoods.map((f, i) => (
+          <div
+            key={i}
+            style={{
+              border: "1px solid #ccc",
+              padding: "15px",
+              margin: "10px 0",
+              borderRadius: "10px",
+              background: "white"
+            }}
+          >
+            <p>
+              <b>Food:</b> {f.name}
+            </p>
+
+            <p>
+              Calories: {f.calories}
+            </p>
+
+            <p>
+              Protein: {f.protein}g
+            </p>
+
+            <p>
+              Carbs: {f.carbs}g
+            </p>
+
+            <p>
+              Fat: {f.fat}g
+            </p>
+          </div>
+        ))
+      )}
+
+      {/* TOTALS */}
+      <h2>Total Nutrition</h2>
+
+      <p>
+        <b>Calories:</b> {totalCalories}
+      </p>
+
+      <p>
+        <b>Protein:</b> {totalProtein}g
+      </p>
+
+      <p>
+        <b>Carbs:</b> {totalCarbs}g
+      </p>
+
+      <p>
+        <b>Fat:</b> {totalFat}g
+      </p>
+
+      {/* PROGRESS */}
+      <h2>Calories Goal Progress</h2>
+
+      <div
+        style={{
+          width: "100%",
+          background: "#ddd",
+          height: "20px",
+          borderRadius: "10px"
+        }}
+      >
         <div
           style={{
             width: `${progress}%`,
             background: "orange",
-            height: "100%"
+            height: "100%",
+            borderRadius: "10px"
           }}
         ></div>
       </div>
 
       <p>{progress.toFixed(0)}%</p>
 
-      {/* ✅ SUCCESS MESSAGE */}
-      {isGoalReached && (
-        <div style={{ marginTop: "15px", textAlign: "center" }}>
-          <p style={{ color: "green", fontWeight: "bold" }}>
-            Congratulations! You have achieved your Goal and Calories Target!
-          </p>
-
-          <button onClick={handleReset}>
-            Reset
-          </button>
-        </div>
+      {progress === 100 && (
+        <p
+          style={{
+            color: "green",
+            fontWeight: "bold",
+            marginTop: "10px"
+          }}
+        >
+          Goal Achieved 🎉
+        </p>
       )}
+
     </div>
   );
 }

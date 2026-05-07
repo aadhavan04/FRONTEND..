@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { TbBackground } from "react-icons/tb";
+import bgImage from "./assets/H&W.jpg";
 
 function Login() {
   const navigate = useNavigate();
@@ -26,7 +28,7 @@ function Login() {
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
       
-      navigate("/home");
+    navigate("/home/dashboard");
 
     } catch (err) {
       setError("Email or Password Incorrect");
@@ -34,13 +36,52 @@ function Login() {
   };
 
   return (
-    <div className="container">
+    <div
+  className="container"
+
+  style={{
+     backgroundImage: `url(${bgImage})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    textDecoration: "none",
+    fontWeight: "bold",
+     margin:"0%", 
+        padding: "0",
+        boxSizing: "border box",
+        minHeight: "100vh",
+        width: "100%",
+
+
+    minHeight:
+      "100vh",
+
+ display:
+      "flex",
+
+    flexDirection:
+      "column",
+
+    justifyContent:
+      "center",
+
+    alignItems:
+      "center"
+
+  }}
+>
 
       
-      <h1 className="app-title">HEALTH & WELLNESS</h1>
+
+      
+     <h1
+    className="app-title"
+  >
+    HEALTH & WELLNESS
+  </h1>
 
      
-      <h2>LOGIN</h2>
+      <h2 className="Login">LOGIN</h2>
 
      
       <div className="form">
@@ -74,9 +115,9 @@ function Login() {
       {error && <p className="error-text">{error}</p>}
 
       
-      <p style={{ marginTop: "15px" }}>
+      <p style={{ marginTop: "15px" , color: "white"}}>
         Don't have an account?{" "}
-        <Link to="/register">Register</Link>
+        <Link style={{color:"lightblue"}} to="/register">Register</Link>
       </p>
 
     </div>
