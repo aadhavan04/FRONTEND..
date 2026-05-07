@@ -243,13 +243,13 @@ const userId =
 
       {/* TITLE */}
 
-      <h1>
-        Fitness Tracking
+      <h1 style={{textAlign: "center"}}>
+        FITNESS TRACKING
       </h1>
 
       {/* FITNESS GOAL */}
 
-      <h2>
+      <h2 style={{fontSize:"medium"}}>
         Set Calories Burn Goal
       </h2>
 
@@ -284,7 +284,7 @@ const userId =
 
       {/* ADD WORKOUT */}
 
-      <h2>
+      <h2 style={{fontSize: "medium"}}>
         Add Exercise
       </h2>
 

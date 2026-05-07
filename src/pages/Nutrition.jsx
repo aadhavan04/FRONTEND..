@@ -280,8 +280,8 @@ const userId =
 
       {/* TITLE */}
 
-      <h1>
-        Nutrition Planner
+      <h1 style={{textAlign: "center"}}>
+        NUTRITION PLANNING
       </h1>
 
       {/* GOAL SELECTION */}

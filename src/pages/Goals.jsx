@@ -278,6 +278,17 @@ function Goals() {
     }
   };
 
+  /* RESET ALL GOALS */
+
+  const resetAllGoals = () => {
+
+    setGoals([]);
+
+    toast.success(
+      "All Goals Reset Successfully!"
+    );
+  };
+
   return (
 
     <div>
@@ -681,6 +692,41 @@ function Goals() {
             </BarChart>
 
           </ResponsiveContainer>
+
+          {/* RESET BUTTON */}
+
+          <div
+            style={{
+              marginTop: "20px",
+              textAlign: "center"
+            }}
+          >
+
+            <button
+              onClick={resetAllGoals}
+
+              style={{
+                padding: "12px 25px",
+
+                background: "#ec4899",
+
+                color: "white",
+
+                border: "none",
+
+                borderRadius: "10px",
+
+                cursor: "pointer",
+
+                fontSize: "16px",
+
+                fontWeight: "bold"
+              }}
+            >
+              Reset All Goals
+            </button>
+
+          </div>
 
         </div>
       )}
