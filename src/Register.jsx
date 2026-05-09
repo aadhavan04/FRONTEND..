@@ -189,7 +189,7 @@ function Register() {
             marginBottom: "4px",
           }}
         >
-          💪 HEALTH & WELLNESS
+          HEALTH & WELLNESS
         </h1>
 
         <p
@@ -211,7 +211,7 @@ function Register() {
             fontWeight: "600",
           }}
         >
-          Create Account 🚀
+          Create Account
         </h2>
 
         {/* NAME */}

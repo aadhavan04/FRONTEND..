@@ -31,12 +31,6 @@ function Profile() {
     ? user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()
     : "U";
 
-  const stats = [
-    { label: "Member Since", value: "2025", icon: "📅" },
-    { label: "Goals Set",    value: JSON.parse(localStorage.getItem(`goals_${user.id}`) || "[]").length, icon: "🎯" },
-    { label: "Workouts",     value: JSON.parse(localStorage.getItem(`fitnessWorkouts_${user.id}`) || "[]").length, icon: "🏋️" },
-  ];
-
   return (
     <>
       <style>{`
@@ -59,21 +53,6 @@ function Profile() {
           background: #fdf4ff;
           display: flex; align-items: center; justify-content: center;
           font-size: 18px; flex-shrink: 0;
-        }
-
-        .stat-card {
-          background: white;
-          border: 1px solid #f3f4f6;
-          border-radius: 16px;
-          padding: 20px;
-          text-align: center;
-          flex: 1;
-          transition: box-shadow 0.2s, transform 0.2s;
-        }
-
-        .stat-card:hover {
-          box-shadow: 0 4px 20px rgba(236,72,153,0.1);
-          transform: translateY(-2px);
         }
 
         .logout-btn-profile {
@@ -159,17 +138,6 @@ function Profile() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Stats Row */}
-        <div style={{ display: "flex", gap: "14px", marginBottom: "24px" }}>
-          {stats.map((s, i) => (
-            <div key={i} className="stat-card">
-              <div style={{ fontSize: "24px", marginBottom: "6px" }}>{s.icon}</div>
-              <div style={{ fontSize: "22px", fontWeight: "800", color: "#111827", fontFamily: "'Syne', sans-serif" }}>{s.value}</div>
-              <div style={{ fontSize: "12px", color: "#9ca3af", marginTop: "2px" }}>{s.label}</div>
-            </div>
-          ))}
         </div>
 
         {/* User Information Card */}

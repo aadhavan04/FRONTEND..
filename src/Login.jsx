@@ -46,8 +46,8 @@ function Login() {
 
   const fillDemo = () => {
     setData({
-      email: "demo@healthwellness.com",
-      password: "Demo@1234",
+      email: "test@hw.com",
+      password: "test@123",
     });
   };
 
@@ -254,7 +254,7 @@ function Login() {
             marginBottom: "4px",
           }}
         >
-          💪 HEALTH & WELLNESS
+          HEALTH & WELLNESS
         </h1>
 
         <p
@@ -276,7 +276,7 @@ function Login() {
             fontWeight: "600",
           }}
         >
-          Welcome Back 👋
+          Welcome Back
         </h2>
 
         {/* EMAIL */}
